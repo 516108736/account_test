@@ -1,6 +1,8 @@
 package iavl
 
 import (
+	"github.com/syndtr/goleveldb/leveldb/filter"
+	"github.com/syndtr/goleveldb/leveldb/opt"
 	"os"
 
 	"github.com/syndtr/goleveldb/leveldb"
@@ -19,7 +21,12 @@ func GetDB() dbm.DB {
 	if err != nil {
 		panic(err)
 	}
-	db, err = dbm.NewGoLevelDB("trie_test", dirPath)
+	db, err = dbm.NewGoLevelDBWithOpts("trie_test", dirPath, &opt.Options{
+		OpenFilesCacheCapacity: currCommon.DBHandle,
+		BlockCacheCapacity:     currCommon.DBCache / 2 * opt.MiB,
+		WriteBuffer:            currCommon.DBCache / 4 * opt.MiB, // Two of these are used internally
+		Filter:                 filter.NewBloomFilter(10),
+	})
 	if err != nil {
 		panic(err)
 	}

@@ -123,6 +123,7 @@ func RemoveAccounts(store account_test.Store, from int, to int, length int, rand
 }
 
 func PrintDB(db *leveldb.DB) {
+	mapp := make(map[int]map[int]int)
 	cnt := 0
 	cntBytes := 0
 	itr := db.NewIterator(nil, nil)
@@ -132,8 +133,30 @@ func PrintDB(db *leveldb.DB) {
 		cnt++
 		cntBytes += len(key)
 		cntBytes += len(value)
+
+		if data, ok := mapp[len(key)]; ok {
+			if _, ok1 := data[len(value)]; ok1 {
+				mapp[len(key)][len(value)]++
+			} else {
+				mapp[len(key)][len(value)] = 1
+			}
+		} else {
+			mapp[len(key)] = make(map[int]int)
+			mapp[len(key)][len(value)] = 1
+		}
 	}
 	fmt.Println("DB Print", "len(key)", cnt, "sum{len(key)+len(value)}", cntBytes)
+	fmt.Println("mapp", mapp)
+	sum := 0
+	for k, vs := range mapp {
+		for value, c := range vs {
+			t := (k + value) * c
+			sum += t
+			fmt.Println("-----------", k, value, c)
+		}
+	}
+	fmt.Println("qingsuan", sum)
+
 }
 
 var (

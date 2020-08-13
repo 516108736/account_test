@@ -20,10 +20,10 @@ type MPT struct {
 func New() *MPT {
 	dbPath := "./mpt_data"
 	os.RemoveAll(dbPath)
-	db, err := ethdb.NewLDBDatabase(dbPath, 128, 128)
+	db, err := ethdb.NewLDBDatabase(dbPath, currCommon.DBCache, currCommon.DBHandle)
 	currCommon.Checkerr(err)
 
-	trDB := trie.NewDatabaseWithCache(db, 128)
+	trDB := trie.NewDatabaseWithCache(db, 0)
 	tr, err := trie.New(common.Hash{}, trDB)
 	currCommon.Checkerr(err)
 
