@@ -2,6 +2,7 @@ package account_test
 
 import (
 	"fmt"
+	"github.com/516108736/account_test/mpts"
 
 	"github.com/516108736/account_test/fastdb"
 	"github.com/516108736/account_test/iavl"
@@ -26,6 +27,9 @@ func NewStore(key string) Store {
 		return mpt.New()
 	case "fastdb":
 		return fastdb.New()
+	case "mpts":
+		return mpts.New()
+
 	default:
 		panic(fmt.Errorf("%v not support yet", key))
 	}
