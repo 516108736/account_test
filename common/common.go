@@ -7,6 +7,6 @@ func Checkerr(err error) {
 }
 
 var (
-	DBHandle = 500
-	DBCache  = 512
+	DBHandle = 1000
+	DBCache  = 1024
 )

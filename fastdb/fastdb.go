@@ -16,7 +16,7 @@ type FastDB struct {
 func New() *FastDB {
 	dbPath := "./fastdb_data"
 	os.RemoveAll(dbPath)
-	db, err := ethdb.NewLDBDatabase(dbPath, 128, 128)
+	db, err := ethdb.NewLDBDatabase(dbPath, currCommon.DBCache, currCommon.DBHandle)
 	currCommon.Checkerr(err)
 	return &FastDB{
 		db: db,
