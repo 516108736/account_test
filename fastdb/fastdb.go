@@ -44,7 +44,6 @@ func (f *FastDB) Type() string {
 }
 
 func (f *FastDB) Commit() {
-
 }
 
 func (f *FastDB) GetBalance(addr []byte) *big.Int {

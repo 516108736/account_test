@@ -121,6 +121,11 @@ var (
 	typ        = flag.String("typ", "fastdb", "send or query")
 )
 
+func CloseDB(db *leveldb.DB) {
+	if err := db.Close(); err != nil {
+		panic(err)
+	}
+}
 func main() {
 	flag.Parse()
 	initNumber := *initNumber
@@ -143,4 +148,6 @@ func main() {
 	RemoveAccounts(store, 0, 0+updateNumber, updateNumber, false)
 	RemoveAccounts(store, initNumber, initNumber+updateNumber, updateNumber, false)
 	RemoveAccounts(store, updateNumber, initNumber, updateNumber, true)
+
+	CloseDB(store.DB())
 }
