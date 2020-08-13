@@ -2,7 +2,6 @@ package account_test
 
 import (
 	"fmt"
-	"math/big"
 
 	"github.com/516108736/account_test/fastdb"
 	"github.com/516108736/account_test/iavl"
@@ -11,11 +10,11 @@ import (
 )
 
 type Store interface {
-	SetBalance(addr []byte, coin *big.Int)
+	Update(addr []byte, value []byte)
 	Type() string
 	Commit()
-	GetBalance(addr []byte) *big.Int
-	DeleteAddr(addr []byte)
+	Get(addr []byte) []byte
+	Delete(addr []byte)
 	DB() *leveldb.DB
 }
 

@@ -1,7 +1,6 @@
 package iavl
 
 import (
-	"math/big"
 	"os"
 
 	"github.com/syndtr/goleveldb/leveldb"
@@ -9,9 +8,6 @@ import (
 	currCommon "github.com/516108736/account_test/common"
 	"github.com/cosmos/cosmos-sdk/store/iavl"
 	sTypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/rlp"
 	dbm "github.com/tendermint/tm-db"
 )
 
@@ -45,35 +41,23 @@ func New() *IAVL {
 	}
 }
 
-func (i *IAVL) SetBalance(addr []byte, coin *big.Int) {
-	value := state.Account{
-		Nonce:    0,
-		Balance:  coin,
-		Root:     common.Hash{},
-		CodeHash: nil,
-	}
-	valueBytes, err := rlp.EncodeToBytes(value)
-	currCommon.Checkerr(err)
-	i.iavl.Set(addr, valueBytes)
+func (i *IAVL) Update(addr []byte, value []byte) {
+	i.iavl.Set(addr, value)
 }
 
-func (i *IAVL) GetBalance(addr []byte) *big.Int {
-	bz := i.iavl.Get(addr)
-	if len(bz) == 0 {
-		return common.Big0
-	}
-	a := new(state.Account)
-	err := rlp.DecodeBytes(bz, a)
-	currCommon.Checkerr(err)
-	return a.Balance
+func (i *IAVL) Get(addr []byte) []byte {
+	return i.iavl.Get(addr)
 }
 
-func (i *IAVL) DeleteAddr(addr []byte) {
+func (i *IAVL) Delete(addr []byte) {
 	i.iavl.Delete(addr)
 }
 
 func (i *IAVL) Commit() {
-	i.iavl.Commit()
+	id := i.iavl.Commit()
+	t, err := iavl.LoadStore(i.db, id, sTypes.PruningOptions{}, false)
+	currCommon.Checkerr(err)
+	i.iavl = t.(*iavl.Store)
 }
 
 func (i *IAVL) Type() string {

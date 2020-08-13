@@ -5,6 +5,9 @@ import (
 	"encoding/binary"
 	"flag"
 	"fmt"
+	currCommon "github.com/516108736/account_test/common"
+	"github.com/ethereum/go-ethereum/core/state"
+	"github.com/ethereum/go-ethereum/rlp"
 	"math/big"
 	"math/rand"
 	"time"
@@ -25,10 +28,31 @@ func IntTo20Bytes(data int) []byte {
 	return hash[:20]
 }
 
+func EncodeBalance(balance *big.Int) []byte {
+	value := state.Account{
+		Nonce:    0,
+		Balance:  balance,
+		Root:     common.Hash{},
+		CodeHash: nil,
+	}
+	valueBytes, err := rlp.EncodeToBytes(value)
+	currCommon.Checkerr(err)
+	return valueBytes
+}
+
+func DecodeBalance(bz []byte) *big.Int {
+	if len(bz) == 0 {
+		return common.Big0
+	}
+	a := new(state.Account)
+	err := rlp.DecodeBytes(bz, a)
+	currCommon.Checkerr(err)
+	return a.Balance
+}
 func AddAccounts(store account_test.Store, from int, to int) {
 	ts := time.Now()
 	for index := from; index < to; index++ {
-		store.SetBalance(IntTo20Bytes(index), coinsForTrieInit)
+		store.Update(IntTo20Bytes(index), EncodeBalance(coinsForTrieInit))
 
 		if index != 0 && index%100000 == 0 {
 			fmt.Println("SetAccounts handle index", index, time.Now().Sub(ts).Seconds())
@@ -51,10 +75,10 @@ func GetAccounts(store account_test.Store, from int, to int, length int, random 
 		if random {
 			addrInt = rand.Intn(to-from) + from
 		}
-		store.GetBalance(IntTo20Bytes(addrInt))
+		store.Get(IntTo20Bytes(addrInt))
 	}
 
-	if store.GetBalance(IntTo20Bytes(addrInt)).Cmp(shouldCoins) != 0 {
+	if DecodeBalance(store.Get(IntTo20Bytes(addrInt))).Cmp(shouldCoins) != 0 {
 		panic("GetAccounts failed")
 	}
 	fmt.Println(store.Type(), "GET End from", from, "to", to, "length", length, time.Now().Sub(ts).Seconds())
@@ -69,10 +93,10 @@ func UpdateAccounts(store account_test.Store, from int, to int, length int, rand
 		if random {
 			addrInt = rand.Intn(to-from) + from
 		}
-		store.SetBalance(IntTo20Bytes(addrInt), coinsForUpdate)
+		store.Update(IntTo20Bytes(addrInt), EncodeBalance(coinsForUpdate))
 	}
 	store.Commit()
-	if store.GetBalance(IntTo20Bytes(addrInt)).Cmp(coinsForUpdate) != 0 {
+	if DecodeBalance(store.Get(IntTo20Bytes(addrInt))).Cmp(coinsForUpdate) != 0 {
 		panic("UpdateAccounts failed")
 	}
 	fmt.Println(store.Type(), "UPDATE END from", from, "to", to, "length", length, time.Now().Sub(ts).Seconds())
@@ -87,15 +111,15 @@ func RemoveAccounts(store account_test.Store, from int, to int, length int, rand
 		if random {
 			addrInt = rand.Intn(to-from) + from
 		}
-		store.DeleteAddr(IntTo20Bytes(addrInt))
+		store.Delete(IntTo20Bytes(addrInt))
 
 	}
 	store.Commit()
 
-	if store.GetBalance(IntTo20Bytes(addrInt)).Cmp(common.Big0) != 0 {
+	if DecodeBalance(store.Get(IntTo20Bytes(addrInt))).Cmp(common.Big0) != 0 {
 		panic("RemoveAccounts failed")
 	}
-	fmt.Println(store.Type(), "IAVL Delete End", time.Now().Sub(ts).Seconds())
+	fmt.Println(store.Type(), "Delete End", time.Now().Sub(ts).Seconds())
 }
 
 func PrintDB(db *leveldb.DB) {

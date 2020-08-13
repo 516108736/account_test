@@ -1,20 +1,20 @@
 package mpt
 
 import (
-	"math/big"
+	"github.com/ethereum/go-ethereum/trie"
 	"os"
 
 	"github.com/syndtr/goleveldb/leveldb"
 
 	currCommon "github.com/516108736/account_test/common"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 type MPT struct {
-	state *state.StateDB
-	db    *ethdb.LDBDatabase
+	tr   *trie.Trie
+	db   *ethdb.LDBDatabase
+	trDB *trie.Database
 }
 
 func New() *MPT {
@@ -23,30 +23,38 @@ func New() *MPT {
 	db, err := ethdb.NewLDBDatabase(dbPath, 128, 128)
 	currCommon.Checkerr(err)
 
-	stateDB, err := state.New(common.Hash{}, state.NewDatabaseWithCache(db, 128))
+	trDB := trie.NewDatabaseWithCache(db, 128)
+	tr, err := trie.New(common.Hash{}, trDB)
 	currCommon.Checkerr(err)
+
 	return &MPT{
-		state: stateDB,
-		db:    db,
+		tr:   tr,
+		db:   db,
+		trDB: trDB,
 	}
+
 }
-func (m *MPT) SetBalance(addr []byte, coin *big.Int) {
-	m.state.SetBalance(common.BytesToAddress(addr), coin)
+func (m *MPT) Update(addr []byte, value []byte) {
+	err := m.tr.TryUpdate(addr, value)
+	currCommon.Checkerr(err)
 }
 
-func (m *MPT) GetBalance(addr []byte) *big.Int {
-	return m.state.GetBalance(common.BytesToAddress(addr))
+func (m *MPT) Get(addr []byte) []byte {
+	value, _ := m.tr.TryGet(addr)
+	return value
 }
 
-func (m *MPT) DeleteAddr(addr []byte) {
-	m.state.Suicide(common.BytesToAddress(addr))
+func (m *MPT) Delete(addr []byte) {
+	m.tr.TryDelete(addr)
+
 }
 
 func (m *MPT) Commit() {
-	root, err := m.state.Commit(true)
+	root, err := m.tr.Commit(nil)
 	currCommon.Checkerr(err)
-	m.state.Database().TrieDB().Commit(root, false)
-	m.state, err = state.New(root, state.NewDatabaseWithCache(m.db, 128))
+	err = m.trDB.Commit(root, false)
+	currCommon.Checkerr(err)
+	m.tr, err = trie.New(root, m.trDB)
 	currCommon.Checkerr(err)
 }
 
