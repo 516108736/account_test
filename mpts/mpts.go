@@ -63,3 +63,7 @@ func (m *MPTS) Type() string {
 func (m *MPTS) DB() *leveldb.DB {
 	return m.db.LDB()
 }
+
+func (m *MPTS) RangeFromRoot() (int, int) {
+	return m.st.RangeFromRoot()
+}
