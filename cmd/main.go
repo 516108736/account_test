@@ -6,6 +6,8 @@ import (
 	"flag"
 	"fmt"
 	currCommon "github.com/516108736/account_test/common"
+	"github.com/516108736/account_test/mpt"
+	"github.com/516108736/account_test/mpts"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/rlp"
 	"math/big"
@@ -156,7 +158,17 @@ func PrintDB(db *leveldb.DB) {
 		}
 	}
 	fmt.Println("qingsuan", sum)
+}
 
+func RangeMPT(store account_test.Store) {
+	switch n := store.(type) {
+	case *mpt.MPT:
+		a, b := n.RangeFromRoot()
+		fmt.Println("MPT RangeFromRoot", "keyCnt", a, "bytesAll", b)
+	case *mpts.MPTS:
+		a, b := n.RangeFromRoot()
+		fmt.Println("MPTS RangeFromRoot", "keyCnt", a, "bytesAll", b)
+	}
 }
 
 var (
@@ -181,6 +193,7 @@ func main() {
 
 	AddAccounts(store, 0, initNumber)
 	PrintDB(store.DB())
+	RangeMPT(store)
 
 	AddAccounts(store, initNumber, initNumber+updateNumber)
 
