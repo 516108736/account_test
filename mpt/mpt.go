@@ -1,6 +1,7 @@
 package mpt
 
 import (
+	"fmt"
 	"github.com/ethereum/go-ethereum/trie"
 	"os"
 
@@ -56,6 +57,7 @@ func (m *MPT) Commit() {
 	currCommon.Checkerr(err)
 	m.tr, err = trie.New(root, m.trDB)
 	currCommon.Checkerr(err)
+	fmt.Println("MPT new root", root.String())
 }
 
 func (m *MPT) Type() string {

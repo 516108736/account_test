@@ -1,6 +1,7 @@
 package mpts
 
 import (
+	"fmt"
 	currCommon "github.com/516108736/account_test/common"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethdb"
@@ -54,6 +55,7 @@ func (m *MPTS) Commit() {
 	currCommon.Checkerr(err)
 	m.st, err = trie.NewSecure(root, m.trDB, 0)
 	currCommon.Checkerr(err)
+	fmt.Println("MPTS new root", root.String())
 }
 
 func (m *MPTS) Type() string {

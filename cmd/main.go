@@ -125,6 +125,7 @@ func RemoveAccounts(store account_test.Store, from int, to int, length int, rand
 }
 
 func PrintDB(db *leveldb.DB) {
+	ts := time.Now()
 	mapp := make(map[int]map[int]int)
 	cnt := 0
 	cntBytes := 0
@@ -157,7 +158,7 @@ func PrintDB(db *leveldb.DB) {
 			fmt.Println("-----------", k, value, c)
 		}
 	}
-	fmt.Println("qingsuan", sum)
+	fmt.Println("qingsuan", sum, time.Now().Sub(ts).Seconds())
 }
 
 func RangeMPT(store account_test.Store) {
