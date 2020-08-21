@@ -1,4 +1,7 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
+github.com/516108736/go-ethereum v0.0.0-20200819105404-edc444c74ebe/go.mod h1:3Y1T+Zg4WQixLaCcn2ELewFSq8AuyiKH4SRKm5dSWA4=
+github.com/516108736/go-ethereum v0.0.0-20200821020533-d68060147805 h1:xURXUQ4sK5UzgGHReC29XdnoRIXGyjAA5u1NOVEbByk=
+github.com/516108736/go-ethereum v0.0.0-20200821020533-d68060147805/go.mod h1:3Y1T+Zg4WQixLaCcn2ELewFSq8AuyiKH4SRKm5dSWA4=
 github.com/516108736/go-ethereum v1.8.21-0.20200819105404-edc444c74ebe h1:zq60RLq99sURbbtX9XRTiTpNSns7tIgPVc6ewPwiizQ=
 github.com/516108736/go-ethereum v1.8.21-0.20200819105404-edc444c74ebe/go.mod h1:3Y1T+Zg4WQixLaCcn2ELewFSq8AuyiKH4SRKm5dSWA4=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=

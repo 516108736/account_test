@@ -11,4 +11,4 @@ require (
 	github.com/tendermint/tm-db v0.2.0
 )
 
-replace github.com/ethereum/go-ethereum v1.9.19 => github.com/516108736/go-ethereum v1.8.21-0.20200819105404-edc444c74ebe
+replace github.com/ethereum/go-ethereum v1.9.19 => github.com/516108736/go-ethereum v0.0.0-20200821020533-d68060147805
